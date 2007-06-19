@@ -4,6 +4,8 @@
 " Maintainer:		Gautam Iyer <gautam@math.uchicago.edu>
 " Last Change:		Wed 01 Jun 2005 02:11:07 PM CDT
 
+scriptencoding utf-8
+
 " Quit when a syntax file was already loaded
 if exists("b:current_syntax")
   finish
@@ -15,7 +17,6 @@ endif
 " also highlighted.
 
 " Syntax clusters
-syn cluster mailHeaderFields	contains=mailHeaderKey,mailSubject,mailHeaderEmail,@mailLinks
 syn cluster mailLinks		contains=mailURL,mailEmail
 syn cluster mailQuoteExps	contains=mailQuoteExp1,mailQuoteExp2,mailQuoteExp3,mailQuoteExp4,mailQuoteExp5,mailQuoteExp6
 
@@ -24,22 +25,10 @@ syn case match
 " emails
 " According to RFC 2822 any printable ASCII character can appear in a field
 " name, except ':'.
-syn region	mailHeader	contains=@mailHeaderFields,@NoSpell start="^From " skip="^\s" end="\v^[!-9;-~]*([^!-~]|$)"me=s-1
-syn match	mailHeaderKey	contained contains=mailEmail,@NoSpell "^From\s.*$"
 
 syn case ignore
 " Nothing else depends on case. Headers in properly quoted (with "[>:] " or "[>:]")
 " emails are matched
-syn region	mailHeader	keepend contains=@mailHeaderFields,@mailQuoteExps,@NoSpell start="^\z(\([>:] \)*\)\v(newsgroups|from|((in-)?reply-)?to|b?cc|subject|return-path|received|date|replied):" skip="^\z1\s" end="\v^\z1[!-9;-~]*([^!-~]|$)"me=s-1 end="\v^\z1@!"me=s-1 end="\v^\z1([>:] )+"me=s-1
-
-syn region	mailHeaderKey	contained contains=mailHeaderEmail,mailEmail,@mailQuoteExps,@NoSpell start="\v(^([>:] )*)@<=(to|b?cc):" skip=",$" end="$"
-syn match	mailHeaderKey	contained contains=mailHeaderEmail,mailEmail,@NoSpell "\v(^([>:] )*)@<=(from|reply-to):.*$"
-syn match	mailHeaderKey	contained contains=@NoSpell "\v(^([>:] )*)@<=date:"
-syn match	mailSubject	contained "\v^subject:.*$"
-syn match	mailSubject	contained contains=@NoSpell "\v(^([>:] )+)@<=subject:.*$"
-
-" Anything in the header between < and > is an email address
-syn match	mailHeaderEmail	contained contains=@NoSpell "<.\{-}>"
 
 " Mail Signatures. (Begin with "-- ", end with change in quote level)
 syn region	mailSignature	keepend contains=@mailLinks,@mailQuoteExps start="^--\s$" end="^$" end="^\([>:] \)\+"me=s-1
@@ -77,13 +66,9 @@ else
 endif
 
 " Define the default highlighting.
-hi def link mailHeader		Statement
-hi def link mailHeaderKey	Type
 hi def link mailSignature	PreProc
-hi def link mailHeaderEmail	mailEmail
 hi def link mailEmail		Special
 hi def link mailURL		String
-hi def link mailSubject		LineNR
 hi def link mailQuoted1		Comment
 hi def link mailQuoted3		mailQuoted1
 hi def link mailQuoted5		mailQuoted1
